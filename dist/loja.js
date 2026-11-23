@@ -30,7 +30,7 @@ function loadDraft() {
 }
 function refreshDraft() {
   loadDraft();
-  $('cartCount').textContent = Object.values(cart).reduce((sum, quantity) => sum + quantity, 0);
+
 }
 function saveDraft() {
   if (!Object.keys(cart).length) {
@@ -46,7 +46,7 @@ function saveDraft() {
 }
 function syncCart() {
   saveDraft();
-  $('cartCount').textContent = Object.values(cart).reduce((sum, quantity) => sum + quantity, 0);
+
 }
 function change(id, amount) {
   refreshDraft();
@@ -87,10 +87,7 @@ function showProduct(code) {
     '<button type="submit">Adicionar à cotação</button></form><p id="productNotice" role="status"></p></article></div>';
   $('productPurchase').addEventListener('submit', event => {
     event.preventDefault();
-    const before = cart[product.id] || 0;
     requestAdd(product.id, $('productQuantity').valueAsNumber);
-    const added = cart[product.id] - before;
-    $('productNotice').textContent = added ? added + ' un. adicionadas à cotação.' : 'Continue pelo formulário para incluir o produto.';
   });
 }
 document.addEventListener('error', event => {
@@ -106,7 +103,7 @@ function render() {
     && (!$('category').value || p.category === $('category').value)
     && (!$('brand').value || p.brand === $('brand').value));
   $('count').textContent = visible.length + (visible.length === 1 ? ' produto' : ' produtos');
-  $('grid').innerHTML = visible.map(p => '<article class="product"><a class="visual product-link" href="'+productUrl(p)+'" aria-label="Ver detalhes de '+p.name+' '+p.id+'">'+photo(p)+'</a><div class="body"><span class="code">'+p.category+'</span><h3><a class="product-link" href="'+productUrl(p)+'">'+p.name+'</a></h3><p class="muted">Marca: '+p.brand+'</p><button data-add="'+p.id+'" type="button">Adicionar à cotação</button></div></article>').join('') || '<p class="empty">Nenhuma produto encontrada com esses filtros.</p>';
+  $('grid').innerHTML = visible.map(p => '<article class="product"><a class="visual product-link" href="'+productUrl(p)+'" aria-label="Ver detalhes de '+p.name+' '+p.id+'">'+photo(p)+'</a><div class="body"><span class="code">'+p.category+'</span><h3><a class="product-link" href="'+productUrl(p)+'">'+p.name+'</a></h3><p class="muted">Marca: '+p.brand+'</p><button data-add="'+p.id+'" type="button">Adicionar à cotação</button></div></article>').join('') || '<p class="empty">Nenhum produto encontrado com esses filtros.</p>';
 }
 function open(title, content) {
   $('dialogTitle').textContent = title;
@@ -117,9 +114,8 @@ function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 }
 function requestAdd(id, quantity) {
-
-  change(id, quantity);
-  $('status').textContent = 'Produto adicionado à sua cotação.';
+  if (!products.some(product => product.id === id) || !Number.isInteger(quantity) || quantity < 1 || quantity > 999) return;
+  showContact('adicionar', {id, quantity});
 }
 function showCart() {
   refreshDraft();
@@ -128,8 +124,8 @@ function showCart() {
   open('Minha cotação', items.length ? lines+
     '<p><strong>Total sob consulta</strong></p><label class="quote-field">Condição de pagamento<select id="payment"><option>A combinar</option><option>Solicitar condição à vista</option><option>Solicitar condição parcelada</option></select></label>'+
     '<label class="quote-field">Observações<textarea id="notes" rows="3" maxlength="2000" placeholder="Conte sobre a aplicação, a entrega ou o interesse em revenda"></textarea></label>'+
-    '<div class="actions"><button data-flow="cotacao">Enviar minha cotação</button><button class="secondary" data-flow="vendedor">Falar com um vendedor</button><button class="secondary" data-browse>Continuar selecionando</button></div>' :
-    '<p>Selecione as produtos para montar sua cotação.</p><div class="actions"><button data-browse>Explorar catálogo</button><button class="secondary" data-flow="vendedor">Falar com um vendedor</button></div>');
+    '<div class="actions"><button data-flow="cotacao">Enviar minha cotação</button><button class="secondary" data-flow="vendedor">Falar com um vendedor</button><button class="secondary" data-browse>Continuar explorando</button></div>' :
+    '<p>Selecione os produtos para montar sua cotação.</p><div class="actions"><button data-browse>Explorar catálogo</button><button class="secondary" data-flow="vendedor">Falar com um vendedor</button></div>');
   if (items.length) {
     $('payment').value = preferences.payment;
     $('notes').value = preferences.notes;
@@ -143,13 +139,13 @@ const states = 'AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS R
 function showContact(flow, pending) {
   refreshDraft();
   const current = products.find(product => product.id === new URLSearchParams(location.search).get('produto'));
-  open(flow === 'adicionar' ? 'Comece sua cotação' : flow === 'cotacao' ? 'Enviar minha cotação' : 'Falar com um vendedor',
+  open(flow === 'adicionar' || flow === 'cotacao' ? 'Enviar minha cotação' : 'Falar com um vendedor',
     '<p class="notice">Prévia do catálogo. O envio ao CRM está em configuração. Use dados fictícios para testar.</p>'+
     '<form id="contactForm"><div class="fields"><label>Nome<input name="nome" required maxlength="120" autocomplete="name"></label><label>WhatsApp<input name="telefone" type="tel" required maxlength="25" autocomplete="tel" placeholder="(00) 00000-0000"></label>'+
     '<label>Cidade<input name="cidade" required maxlength="100" autocomplete="address-level2"></label><label>UF<select name="estado" required><option value="">Selecione</option>'+states.map(state=>'<option>'+state+'</option>').join('')+'</select></label>'+
     '<label>Empresa / CNPJ (opcional)<input name="cnpj" maxlength="40"></label><label>E-mail (opcional)<input name="email" type="email" maxlength="160" autocomplete="email"></label>'+
-    '<label>Produto de interesse (opcional)<input name="interesse" maxlength="200" placeholder="Nome ou código da produto"></label></div>'+
-    '<div class="actions"><button type="submit">'+(flow === 'adicionar' ? 'Adicionar à minha cotação' : 'Simular solicitação')+'</button></div></form>');
+    '<label>Produto de interesse (opcional)<input name="interesse" maxlength="200" placeholder="Nome ou código do produto"></label></div>'+
+    '<div class="actions"><button type="submit">'+(flow === 'adicionar' ? 'Continuar para minha cotação' : flow === 'vendedor' ? 'Solicitar atendimento' : 'Enviar cotação')+'</button></div></form>');
   const form = $('contactForm');
 
   form.elements.interesse.value = pending ? products.find(product=>product.id===pending.id).name : current?.name || '';
@@ -161,6 +157,7 @@ function showContact(flow, pending) {
     const contact = Object.fromEntries(new FormData(form));
     if (pending) {
       change(pending.id,pending.quantity);
+      $('status').textContent = 'Dados preenchidos. Produto adicionado à sua cotação.';
       showCart();
       return;
     }
