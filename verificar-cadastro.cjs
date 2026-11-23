@@ -4,8 +4,8 @@ const local=new Map(),session=new Map();let now=100000;
 const storage=map=>({getItem:k=>map.get(k),setItem:(k,v)=>map.set(k,v),removeItem:k=>map.delete(k)});
 function page(){
  const nodes={};let forms=0;
- const form={elements:{interesse:{},telefone:{value:'66999999999',setCustomValidity(){},addEventListener(){}}},addEventListener(t,fn){this[t]=fn;forms++},reportValidity(){return true}};
- const c=vm.createContext({document:{getElementById(id){if(id==='contactForm')return form;return nodes[id]??={value:'',addEventListener(){},showModal(){}}},addEventListener(){}},window:{addEventListener(){}},location:{search:''},URLSearchParams,Intl,Date:{now:()=>now},crypto:{randomUUID:()=> 'test-request'},FormData:class{*[Symbol.iterator](){yield ['nome','Teste'];yield ['telefone','66999999999'];yield ['cidade','Primavera do Leste'];yield ['estado','MT'];}},localStorage:storage(local),sessionStorage:storage(session)});
+ const form={elements:{tipo_documento:{value:'cpf',addEventListener(){}},documento:{value:'12345678901',setCustomValidity(){},addEventListener(){}},interesse:{},telefone:{value:'66999999999',setCustomValidity(){},addEventListener(){}}},addEventListener(t,fn){this[t]=fn;forms++},reportValidity(){return true}};
+ const c=vm.createContext({document:{getElementById(id){if(id==='contactForm')return form;return nodes[id]??={value:'',addEventListener(){},showModal(){}}},addEventListener(){}},window:{addEventListener(){}},location:{search:''},URLSearchParams,Intl,Date:{now:()=>now},crypto:{randomUUID:()=> 'test-request'},FormData:class{*[Symbol.iterator](){yield ['tipo_documento','cpf'];yield ['documento','12345678901'];yield ['nome','Teste'];yield ['telefone','66999999999'];yield ['cidade','Primavera do Leste'];yield ['estado','MT'];}},localStorage:storage(local),sessionStorage:storage(session)});
  vm.runInContext(source,c);return{nodes,form,run:s=>vm.runInContext(s,c),forms:()=>forms};
 }
 let p=page();p.run('requestAdd(products[0].id,1)');assert.equal(p.forms(),1);assert.doesNotMatch(p.nodes.panel.innerHTML,/R\$/);
@@ -19,3 +19,19 @@ const expiry=p.run('expiresAt');p.run('cart={};syncCart();requestAdd(products[1]
 now=expiry;p=page();p.run('requestAdd(products[2].id,1)');assert.equal(p.forms(),1);assert.equal(session.size,0);
 assert.doesNotMatch(p.nodes.grid.innerHTML,/R\$/);
 console.log('Cadastro único verificado: vários produtos, navegação, recarga, envio, seleção esvaziada, nova cotação e expiração de 24h.');
+
+assert.equal(p.run("validDocumentFormat('cpf','123.456.789-01')"),true);
+assert.equal(p.run("validDocumentFormat('cpf','123')"),false);
+assert.equal(p.run("validDocumentFormat('cnpj','12.345.678/0001-90')"),true);
+assert.equal(p.run("validDocumentFormat('cnpj','123')"),false);
+assert.equal(p.run("products.every(x=>x.pricesByProfile.cpf===x.priceCents && x.pricesByProfile.cnpj===x.priceCents)"),true);
+assert.equal(p.run("priceFor(products[0], 'cpf')"),57500);
+assert.equal(p.run("priceFor(products[0], 'cnpj')"),57500);
+p.run("products[0].pricesByProfile.cnpj=50000");
+assert.equal(p.run("priceFor(products[0], 'cpf')"),57500);
+assert.equal(p.run("priceFor(products[0], 'cnpj')"),50000);
+p.run("change(products[0].id,2);saveQuoteContact({nome:'Teste',telefone:'11900000000',tipo_documento:'cnpj',documento:'12345678000190'});showCart()");
+assert.match(p.nodes.panel.innerHTML,/Pessoa jurídica/);
+assert.match(p.nodes.panel.innerHTML,/1.000,00/);
+p=page();p.run('showCart()');assert.equal(p.forms(),0);assert.match(p.nodes.panel.innerHTML,/Pessoa jurídica/);
+console.log('CPF e CNPJ mantêm preços iguais na base; preços independentes, totais por perfil e persistência verificados.');

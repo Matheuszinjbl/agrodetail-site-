@@ -14,7 +14,11 @@
     "priceUnit": "caixa",
     "sku": "20025",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E53"
+    "priceSourceCell": "Plan1!E53",
+    "pricesByProfile": {
+      "cpf": 57500,
+      "cnpj": 57500
+    }
   },
   {
     "id": "zero-limpador-de-pneus-e-borrachas",
@@ -31,7 +35,11 @@
     "priceUnit": "caixa",
     "sku": "20027",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E55"
+    "priceSourceCell": "Plan1!E55",
+    "pricesByProfile": {
+      "cpf": 43500,
+      "cnpj": 43500
+    }
   },
   {
     "id": "vidry-limpa-vidros",
@@ -48,7 +56,11 @@
     "priceUnit": "caixa",
     "sku": "20023",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E51"
+    "priceSourceCell": "Plan1!E51",
+    "pricesByProfile": {
+      "cpf": 35500,
+      "cnpj": 35500
+    }
   },
   {
     "id": "revit-pro-condicionador-de-plasticos-e-borrachas",
@@ -65,7 +77,11 @@
     "priceUnit": "caixa",
     "sku": "20032",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E60"
+    "priceSourceCell": "Plan1!E60",
+    "pricesByProfile": {
+      "cpf": 49500,
+      "cnpj": 49500
+    }
   },
   {
     "id": "relux-pro-condicionador-de-pneus",
@@ -82,7 +98,11 @@
     "priceUnit": "caixa",
     "sku": "20024",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E52"
+    "priceSourceCell": "Plan1!E52",
+    "pricesByProfile": {
+      "cpf": 54000,
+      "cnpj": 54000
+    }
   },
   {
     "id": "blackout-pro-gel",
@@ -99,7 +119,11 @@
     "priceUnit": "caixa",
     "sku": "20030",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E58"
+    "priceSourceCell": "Plan1!E58",
+    "pricesByProfile": {
+      "cpf": 54500,
+      "cnpj": 54500
+    }
   },
   {
     "id": "nuve-foam-shampoo-protetor-concentrado",
@@ -116,7 +140,11 @@
     "priceUnit": "caixa",
     "sku": "42",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E40"
+    "priceSourceCell": "Plan1!E40",
+    "pricesByProfile": {
+      "cpf": 57500,
+      "cnpj": 57500
+    }
   },
   {
     "id": "vernid-pro-verniz-finalizador",
@@ -133,7 +161,11 @@
     "priceUnit": "caixa",
     "sku": "20031",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E59"
+    "priceSourceCell": "Plan1!E59",
+    "pricesByProfile": {
+      "cpf": 54000,
+      "cnpj": 54000
+    }
   },
   {
     "id": "classy-condicionador-de-couros",
@@ -150,7 +182,11 @@
     "priceUnit": "caixa",
     "sku": "20029",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E57"
+    "priceSourceCell": "Plan1!E57",
+    "pricesByProfile": {
+      "cpf": 51500,
+      "cnpj": 51500
+    }
   },
   {
     "id": "arpur-apc-de-alta-performance",
@@ -167,7 +203,11 @@
     "priceUnit": "caixa",
     "sku": "20021",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E49"
+    "priceSourceCell": "Plan1!E49",
+    "pricesByProfile": {
+      "cpf": 35800,
+      "cnpj": 35800
+    }
   },
   {
     "id": "arpur-million-apc-multiuso",
@@ -184,7 +224,11 @@
     "priceUnit": "caixa",
     "sku": "44",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E54"
+    "priceSourceCell": "Plan1!E54",
+    "pricesByProfile": {
+      "cpf": 45800,
+      "cnpj": 45800
+    }
   },
   {
     "id": "remov-removedor-de-alta-performance",
@@ -201,7 +245,11 @@
     "priceUnit": "caixa",
     "sku": "20022",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E50"
+    "priceSourceCell": "Plan1!E50",
+    "pricesByProfile": {
+      "cpf": 65500,
+      "cnpj": 65500
+    }
   },
   {
     "id": "hfx-extreme-1-200",
@@ -218,7 +266,11 @@
     "priceUnit": "caixa",
     "sku": "20",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E4"
+    "priceSourceCell": "Plan1!E4",
+    "pricesByProfile": {
+      "cpf": 43900,
+      "cnpj": 43900
+    }
   },
   {
     "id": "dx-extreme-1-200",
@@ -235,7 +287,11 @@
     "priceUnit": "caixa",
     "sku": "2",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E3"
+    "priceSourceCell": "Plan1!E3",
+    "pricesByProfile": {
+      "cpf": 43900,
+      "cnpj": 43900
+    }
   },
   {
     "id": "sx-extreme-1-200",
@@ -252,7 +308,11 @@
     "priceUnit": "caixa",
     "sku": "21",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E5"
+    "priceSourceCell": "Plan1!E5",
+    "pricesByProfile": {
+      "cpf": 43900,
+      "cnpj": 43900
+    }
   },
   {
     "id": "hfx-origens-desincrustante-acido",
@@ -265,7 +325,11 @@
     "description": "Desincrustante ácido para instalações e equipamentos industriais.",
     "packaging": "Cx 4 x 5L · Cx 12 x 1L · 50L",
     "dilution": "Consultar orientação do fabricante",
-    "priceCents": null
+    "priceCents": null,
+    "pricesByProfile": {
+      "cpf": null,
+      "cnpj": null
+    }
   },
   {
     "id": "dx-origens-desengraxante-alcalino",
@@ -278,7 +342,11 @@
     "description": "Desengraxante alcalino concentrado para superfícies graxosas e oleosas.",
     "packaging": "Cx 4 x 5L · Cx 12 x 1L · 50L",
     "dilution": "Consultar orientação do fabricante",
-    "priceCents": null
+    "priceCents": null,
+    "pricesByProfile": {
+      "cpf": null,
+      "cnpj": null
+    }
   },
   {
     "id": "sx-origens-detergente-automotivo",
@@ -291,7 +359,11 @@
     "description": "Detergente automotivo super concentrado para lavagem em geral.",
     "packaging": "Cx 4 x 5L · Cx 12 x 1L · 50L",
     "dilution": "Consultar orientação do fabricante",
-    "priceCents": null
+    "priceCents": null,
+    "pricesByProfile": {
+      "cpf": null,
+      "cnpj": null
+    }
   },
   {
     "id": "acid-pro-1-litro",
@@ -308,7 +380,11 @@
     "priceUnit": "caixa",
     "sku": "29",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E32"
+    "priceSourceCell": "Plan1!E32",
+    "pricesByProfile": {
+      "cpf": 43500,
+      "cnpj": 43500
+    }
   },
   {
     "id": "solucao-acida-concretex",
@@ -325,7 +401,11 @@
     "priceUnit": "caixa",
     "sku": "30",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E33"
+    "priceSourceCell": "Plan1!E33",
+    "pricesByProfile": {
+      "cpf": 34000,
+      "cnpj": 34000
+    }
   },
   {
     "id": "top-tires-limpa-pneus",
@@ -342,7 +422,11 @@
     "priceUnit": "caixa",
     "sku": "8",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E23"
+    "priceSourceCell": "Plan1!E23",
+    "pricesByProfile": {
+      "cpf": 27000,
+      "cnpj": 27000
+    }
   },
   {
     "id": "blackout-selante-para-pneus-e-borrachas",
@@ -359,7 +443,11 @@
     "priceUnit": "caixa",
     "sku": "20026",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E21"
+    "priceSourceCell": "Plan1!E21",
+    "pricesByProfile": {
+      "cpf": 53000,
+      "cnpj": 53000
+    }
   },
   {
     "id": "multiclean-flotador-ecologico",
@@ -376,7 +464,11 @@
     "priceUnit": "caixa",
     "sku": "32",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E35"
+    "priceSourceCell": "Plan1!E35",
+    "pricesByProfile": {
+      "cpf": 26000,
+      "cnpj": 26000
+    }
   },
   {
     "id": "hydro-barras-limpador-de-barras-pulverizadoras",
@@ -393,7 +485,11 @@
     "priceUnit": "caixa",
     "sku": "20044",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E43"
+    "priceSourceCell": "Plan1!E43",
+    "pricesByProfile": {
+      "cpf": 69500,
+      "cnpj": 69500
+    }
   },
   {
     "id": "menta-mol-detergente-para-pre-lavagem",
@@ -410,7 +506,11 @@
     "priceUnit": "caixa",
     "sku": "20006",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E44"
+    "priceSourceCell": "Plan1!E44",
+    "pricesByProfile": {
+      "cpf": 33000,
+      "cnpj": 33000
+    }
   },
   {
     "id": "silicone-em-gel-protection-plastic",
@@ -427,7 +527,11 @@
     "priceUnit": "unidade",
     "sku": "34",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E36"
+    "priceSourceCell": "Plan1!E36",
+    "pricesByProfile": {
+      "cpf": 3800,
+      "cnpj": 3800
+    }
   },
   {
     "id": "acqua-paris-gold-odorizante",
@@ -444,7 +548,11 @@
     "priceUnit": "caixa",
     "sku": "12",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E26"
+    "priceSourceCell": "Plan1!E26",
+    "pricesByProfile": {
+      "cpf": 22200,
+      "cnpj": 22200
+    }
   },
   {
     "id": "flores-do-cerrado-gold-odorizante",
@@ -461,7 +569,11 @@
     "priceUnit": "caixa",
     "sku": "13",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E27"
+    "priceSourceCell": "Plan1!E27",
+    "pricesByProfile": {
+      "cpf": 22200,
+      "cnpj": 22200
+    }
   },
   {
     "id": "loving-fruit-odorizante",
@@ -478,7 +590,11 @@
     "priceUnit": "caixa",
     "sku": "15",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E29"
+    "priceSourceCell": "Plan1!E29",
+    "pricesByProfile": {
+      "cpf": 22200,
+      "cnpj": 22200
+    }
   },
   {
     "id": "grax-remove-pasta-desengraxante",
@@ -495,7 +611,11 @@
     "priceUnit": "unidade",
     "sku": "10",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E24"
+    "priceSourceCell": "Plan1!E24",
+    "pricesByProfile": {
+      "cpf": 6825,
+      "cnpj": 6825
+    }
   },
   {
     "id": "autoturbo-profissional",
@@ -512,7 +632,11 @@
     "priceUnit": "unidade",
     "sku": "38",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E39"
+    "priceSourceCell": "Plan1!E39",
+    "pricesByProfile": {
+      "cpf": 2250000,
+      "cnpj": 2250000
+    }
   },
   {
     "id": "tools-aplicador-360-gravity",
@@ -529,7 +653,11 @@
     "priceUnit": "unidade",
     "sku": "45",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E42"
+    "priceSourceCell": "Plan1!E42",
+    "pricesByProfile": {
+      "cpf": 13900,
+      "cnpj": 13900
+    }
   },
   {
     "id": "hfx-extreme-1-litro",
@@ -546,7 +674,11 @@
     "priceUnit": "caixa",
     "sku": "22",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E6"
+    "priceSourceCell": "Plan1!E6",
+    "pricesByProfile": {
+      "cpf": 47900,
+      "cnpj": 47900
+    }
   },
   {
     "id": "dx-extreme-1-litro",
@@ -563,7 +695,11 @@
     "priceUnit": "caixa",
     "sku": "23",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E7"
+    "priceSourceCell": "Plan1!E7",
+    "pricesByProfile": {
+      "cpf": 47900,
+      "cnpj": 47900
+    }
   },
   {
     "id": "sx-extreme-1-litro",
@@ -580,7 +716,11 @@
     "priceUnit": "caixa",
     "sku": "24",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E8"
+    "priceSourceCell": "Plan1!E8",
+    "pricesByProfile": {
+      "cpf": 47900,
+      "cnpj": 47900
+    }
   },
   {
     "id": "mentamol-1-litro",
@@ -597,7 +737,11 @@
     "priceUnit": "caixa",
     "sku": "20015",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E45"
+    "priceSourceCell": "Plan1!E45",
+    "pricesByProfile": {
+      "cpf": 36000,
+      "cnpj": 36000
+    }
   },
   {
     "id": "multiclean-1-litro",
@@ -614,7 +758,11 @@
     "priceUnit": "caixa",
     "sku": "31",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E34"
+    "priceSourceCell": "Plan1!E34",
+    "pricesByProfile": {
+      "cpf": 27500,
+      "cnpj": 27500
+    }
   },
   {
     "id": "top-tires-1-litro",
@@ -631,7 +779,11 @@
     "priceUnit": "caixa",
     "sku": "7",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E22"
+    "priceSourceCell": "Plan1!E22",
+    "pricesByProfile": {
+      "cpf": 25000,
+      "cnpj": 25000
+    }
   },
   {
     "id": "blackout-1-litro",
@@ -648,7 +800,11 @@
     "priceUnit": "caixa",
     "sku": "6",
     "priceTable": "Geral",
-    "priceSourceCell": "Plan1!E20"
+    "priceSourceCell": "Plan1!E20",
+    "pricesByProfile": {
+      "cpf": 44000,
+      "cnpj": 44000
+    }
   },
   {
     "id": "vernid-pro-1-litro",
@@ -661,6 +817,10 @@
     "description": "Verniz finalizador para motor, chassi e metais em embalagem de 1 litro.",
     "packaging": "1 Litro · Cx 12 x 1L",
     "dilution": "Consultar orientação do fabricante",
-    "priceCents": null
+    "priceCents": null,
+    "pricesByProfile": {
+      "cpf": null,
+      "cnpj": null
+    }
   }
 ]
