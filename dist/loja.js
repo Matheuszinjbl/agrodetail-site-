@@ -6,13 +6,13 @@ const panel = $('panel');
 const draftKey = 'agrodetail-cotacao-precos-v3';
 const draftLifetime = 24 * 60 * 60 * 1000;
 let cart = {};
-let preferences = {payment:'A combinar', notes:''};
+let preferences = {payment:'Valor da Tabela Geral válido para todas as formas de pagamento', notes:''};
 let expiresAt = 0;
 // Price visibility is unlocked only after this page's contact form validates.
 let quoteAccessExpiresAt = 0;
 function loadDraft() {
   cart = {};
-  preferences = {payment:'A combinar', notes:''};
+  preferences = {payment:'Valor da Tabela Geral válido para todas as formas de pagamento', notes:''};
   expiresAt = 0;
   try {
     localStorage.removeItem('agrodetail-cotacao-v1');
@@ -27,7 +27,6 @@ function loadDraft() {
     for (const {id} of products) {
       if (Number.isInteger(saved.items?.[id]) && saved.items[id] > 0 && saved.items[id] <= 999) cart[id] = saved.items[id];
     }
-    if (typeof saved.preferences?.payment === 'string') preferences.payment = saved.preferences.payment;
     if (typeof saved.preferences?.notes === 'string') preferences.notes = saved.preferences.notes;
   } catch {}
 }
@@ -38,7 +37,7 @@ function refreshDraft() {
 function saveDraft() {
   if (!Object.keys(cart).length) {
     expiresAt = 0;
-    preferences = {payment:'A combinar', notes:''};
+    preferences = {payment:'Valor da Tabela Geral válido para todas as formas de pagamento', notes:''};
   } else if (!expiresAt) {
     expiresAt = Date.now() + draftLifetime;
   }
@@ -141,15 +140,14 @@ function showCart() {
   }
   const lines = items.map(product => '<div class="quote-line"><a href="'+productUrl(product)+'" class="quote-photo">'+photo(product)+'</a><div><a class="product-link" href="'+productUrl(product)+'"><strong>'+product.name+'</strong></a><p class="muted">'+product.id+' · '+product.brand+'</p><p>'+escapeHtml(product.packaging)+'</p><span>'+priceLabel(product)+(hasPrice(product) ? ' · Subtotal: '+money(product.priceCents * cart[product.id]) : '')+'</span><div class="quantity"><button data-minus="'+product.id+'" aria-label="Diminuir '+product.id+'">−</button><span>'+cart[product.id]+'</span><button data-plus="'+product.id+'" aria-label="Aumentar '+product.id+'">+</button><button class="secondary" data-remove="'+product.id+'">Excluir</button></div></div></div>').join('');
   open('Minha cotação', items.length ? lines+
-    '<p><strong>'+quoteTotal(items)+'</strong></p><p class="muted">Valores da Tabela Geral por embalagem indicada. Frete a combinar. Cada quantidade corresponde a uma caixa ou unidade descrita.</p><label class="quote-field">Condição de pagamento<select id="payment"><option>A combinar</option><option>Solicitar condição à vista</option><option>Solicitar condição parcelada</option></select></label>'+
+    '<p><strong>'+quoteTotal(items)+'</strong></p><p class="muted">Valores da Tabela Geral por embalagem indicada. Frete a combinar. Cada quantidade corresponde a uma caixa ou unidade descrita.</p><div class="notice"><strong>Condição de pagamento</strong><p>O valor da Tabela Geral é válido para todas as formas de pagamento.</p></div>'+
     '<label class="quote-field">Observações<textarea id="notes" rows="3" maxlength="2000" placeholder="Conte sobre a aplicação, a entrega ou o interesse em revenda"></textarea></label>'+
-    '<div class="actions"><button data-flow="cotacao">Enviar minha cotação</button><button class="secondary" data-flow="vendedor">Falar com um vendedor</button><button class="secondary" data-browse>Continuar explorando</button></div>' :
-    '<p>Selecione os produtos para montar sua cotação.</p><div class="actions"><button data-browse>Explorar catálogo</button><button class="secondary" data-flow="vendedor">Falar com um vendedor</button></div>');
+    '<div class="actions"><button data-flow="cotacao">Enviar cotação</button><button class="secondary" data-browse>Continuar explorando</button></div>' :
+    '<p>Selecione os produtos para montar sua cotação.</p><div class="actions"><button data-browse>Explorar catálogo</button></div>');
   if (items.length) {
-    $('payment').value = preferences.payment;
     $('notes').value = preferences.notes;
-    for (const id of ['payment','notes']) $(id).addEventListener('input', () => {
-      preferences = {payment:$('payment').value, notes:$('notes').value};
+    $('notes').addEventListener('input', () => {
+      preferences.notes = $('notes').value;
       saveDraft();
     });
   }
