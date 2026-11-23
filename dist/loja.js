@@ -8,8 +8,31 @@ const draftLifetime = 24 * 60 * 60 * 1000;
 let cart = {};
 let preferences = {payment:'Valor da Tabela Geral válido para todas as formas de pagamento', notes:''};
 let expiresAt = 0;
-// Price visibility is unlocked only after this page's contact form validates.
-let quoteAccessExpiresAt = 0;
+const contactKey = 'agrodetail-contato-cotacao-v1';
+let quoteContact = null;
+function clearQuoteContact() {
+  quoteContact = null;
+  try { sessionStorage.removeItem(contactKey); } catch {}
+}
+function getQuoteContact() {
+  if (!quoteContact) {
+    try { quoteContact = JSON.parse(sessionStorage.getItem(contactKey)); } catch {}
+  }
+  if (!quoteContact || !Number.isFinite(quoteContact.expiresAt) || quoteContact.expiresAt <= Date.now()
+      || (expiresAt && quoteContact.expiresAt !== expiresAt)
+      || typeof quoteContact.data?.nome !== 'string' || !quoteContact.data.nome.trim()
+      || !/^\d{10,13}$/.test(String(quoteContact.data?.telefone ?? '').replace(/\D/g,''))) {
+    clearQuoteContact();
+    return null;
+  }
+  // Keep the same quote identity while browsing, even after removing its last item.
+  if (!expiresAt) expiresAt = quoteContact.expiresAt;
+  return quoteContact.data;
+}
+function saveQuoteContact(data) {
+  quoteContact = {data, expiresAt};
+  try { sessionStorage.setItem(contactKey, JSON.stringify(quoteContact)); } catch {}
+}
 function loadDraft() {
   cart = {};
   preferences = {payment:'Valor da Tabela Geral válido para todas as formas de pagamento', notes:''};
@@ -32,6 +55,7 @@ function loadDraft() {
 }
 function refreshDraft() {
   loadDraft();
+  getQuoteContact();
 
 }
 function saveDraft() {
@@ -129,12 +153,18 @@ function escapeHtml(value) {
 }
 function requestAdd(id, quantity) {
   if (!products.some(product => product.id === id) || !Number.isInteger(quantity) || quantity < 1 || quantity > 999) return;
+  refreshDraft();
+  if (getQuoteContact()) {
+    change(id, quantity);
+    showCart();
+    return;
+  }
   showContact('adicionar', {id, quantity});
 }
 function showCart() {
   refreshDraft();
   const items = products.filter(product => cart[product.id]);
-  if (items.length && (quoteAccessExpiresAt !== expiresAt || quoteAccessExpiresAt <= Date.now())) {
+  if (items.length && !getQuoteContact()) {
     showContact('visualizar');
     return;
   }
@@ -156,7 +186,7 @@ const states = 'AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS R
 function showContact(flow, pending) {
   refreshDraft();
   const current = products.find(product => product.id === new URLSearchParams(location.search).get('produto'));
-  open(flow === 'adicionar' || flow === 'cotacao' || flow === 'visualizar' ? 'Enviar minha cotação' : 'Falar com um vendedor',
+  open(flow === 'adicionar' || flow === 'cotacao' || flow === 'visualizar' ? 'Seus dados para a cotação' : 'Falar com um vendedor',
     '<p class="notice">Prévia do catálogo. O envio ao CRM está em configuração. Use dados fictícios para testar.</p>'+
     '<form id="contactForm"><div class="fields"><label>Nome<input name="nome" required maxlength="120" autocomplete="name"></label><label>WhatsApp<input name="telefone" type="tel" required maxlength="25" autocomplete="tel" placeholder="(00) 00000-0000"></label>'+
     '<label>Cidade<input name="cidade" required maxlength="100" autocomplete="address-level2"></label><label>UF<select name="estado" required><option value="">Selecione</option>'+states.map(state=>'<option>'+state+'</option>').join('')+'</select></label>'+
@@ -174,16 +204,21 @@ function showContact(flow, pending) {
     const contact = Object.fromEntries(new FormData(form));
     if (pending) {
       change(pending.id,pending.quantity);
-      quoteAccessExpiresAt = expiresAt;
+      saveQuoteContact(contact);
       $('status').textContent = 'Dados preenchidos. Produto adicionado à sua cotação.';
       showCart();
       return;
     }
     if (flow === 'visualizar') {
-      quoteAccessExpiresAt = expiresAt;
+      saveQuoteContact(contact);
       showCart();
       return;
     }
+    completeRequest(flow, contact);
+  });
+  form.elements.telefone.addEventListener('input',()=>form.elements.telefone.setCustomValidity(''));
+}
+function completeRequest(flow, contact) {
     const payload = {
       origem:'catalogo-digital-agrodetail', tipo:flow, ...contact,
       itens:products.filter(product=>cart[product.id]).map(product=>({codigo:product.sku || product.id,nome:product.name,embalagem:product.packaging,quantidade:cart[product.id],preco_centavos:product.priceCents,subtotal_centavos:hasPrice(product)?product.priceCents*cart[product.id]:null})),
@@ -191,11 +226,16 @@ function showContact(flow, pending) {
     };
     const requestId = crypto.randomUUID();
     cart = {};
-    quoteAccessExpiresAt = 0;
+    clearQuoteContact();
     syncCart();
     open('Prévia da solicitação','<p class="notice">Solicitação preparada para '+(flow==='cotacao'?'cotação':'atendimento com vendedor')+'. O CRM ainda precisa ser conectado para realizar o envio.</p><p><strong>'+escapeHtml(payload.nome)+'</strong> · '+escapeHtml(payload.cidade)+' / '+escapeHtml(payload.estado)+'</p><p>'+payload.itens.length+' tipos de produto selecionados.</p><p>Simulação '+requestId+'. Seleção encerrada. Uma nova solicitação começa com os dados em branco.</p><button data-show-quote>Voltar à minha cotação</button>');
-  });
-  form.elements.telefone.addEventListener('input',()=>form.elements.telefone.setCustomValidity(''));
+}
+function requestQuote() {
+  refreshDraft();
+  if (!Object.keys(cart).length) { showCart(); return; }
+  const contact = getQuoteContact();
+  if (!contact) { showContact('cotacao'); return; }
+  completeRequest('cotacao', contact);
 }
 for (const id of ['search','category','brand']) $(id).addEventListener('input',render);
 $('cartButton').onclick = showCart;
@@ -211,7 +251,8 @@ document.addEventListener('click', event => {
     syncCart();
     showCart();
   }
-  if (flow) showContact(flow);
+  if (flow === 'cotacao') requestQuote();
+  else if (flow) showContact(flow);
   if (showQuote !== undefined) showCart();
   if (browse !== undefined) {
     modal.close();
