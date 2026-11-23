@@ -8,6 +8,8 @@ const draftLifetime = 24 * 60 * 60 * 1000;
 let cart = {};
 let preferences = {payment:'A combinar', notes:''};
 let expiresAt = 0;
+// Price visibility is unlocked only after this page's contact form validates.
+let quoteAccessExpiresAt = 0;
 function loadDraft() {
   cart = {};
   preferences = {payment:'A combinar', notes:''};
@@ -92,7 +94,7 @@ function showProduct(code) {
   document.title = product.name + ' | AgroDetail | Autolimpe';
   page.innerHTML = back + '<div class="detail-grid"><div class="visual">' + photo(product) +
     '</div><article class="detail-info"><span class="code">' + product.id + '</span><h1>' + product.name +
-    '</h1><p class="price">'+priceLabel(product)+'</p><dl><div><dt>Código</dt><dd>' + product.id +
+    '</h1><p class="muted">Consulte os valores na cotação após preencher seus dados.</p><dl><div><dt>Código</dt><dd>' + product.id +
     '</dd></div><div><dt>Categoria</dt><dd>' + product.category +
     '</dd></div><div><dt>Marca</dt><dd>' + product.brand +
     '</dd></div><div><dt>Embalagens</dt><dd>'+escapeHtml(product.packaging)+'</dd></div><div><dt>Diluição</dt><dd>'+escapeHtml(product.dilution)+'</dd></div></dl><p class="description">'+escapeHtml(product.description)+'</p><p class="muted">Consulte disponibilidade e condições para compra ou revenda.</p>' +
@@ -116,7 +118,7 @@ function render() {
     && (!$('category').value || p.category === $('category').value)
     && (!$('brand').value || p.brand === $('brand').value));
   $('count').textContent = visible.length + (visible.length === 1 ? ' produto' : ' produtos');
-  $('grid').innerHTML = visible.map(p => '<article class="product"><a class="visual product-link" href="'+productUrl(p)+'" aria-label="Ver detalhes de '+p.name+' '+p.id+'">'+photo(p)+'</a><div class="body"><span class="code">'+p.category+'</span><h3><a class="product-link" href="'+productUrl(p)+'">'+p.name+'</a></h3><p class="muted">Marca: '+p.brand+'</p><p class="price">'+priceLabel(p)+'</p><p class="muted">'+escapeHtml(p.packaging)+'</p><button data-add="'+p.id+'" type="button">Adicionar à cotação</button></div></article>').join('') || '<p class="empty">Nenhum produto encontrado com esses filtros.</p>';
+  $('grid').innerHTML = visible.map(p => '<article class="product"><a class="visual product-link" href="'+productUrl(p)+'" aria-label="Ver detalhes de '+p.name+' '+p.id+'">'+photo(p)+'</a><div class="body"><span class="code">'+p.category+'</span><h3><a class="product-link" href="'+productUrl(p)+'">'+p.name+'</a></h3><p class="muted">Marca: '+p.brand+'</p><p class="muted">'+escapeHtml(p.packaging)+'</p><button data-add="'+p.id+'" type="button">Adicionar à cotação</button></div></article>').join('') || '<p class="empty">Nenhum produto encontrado com esses filtros.</p>';
 }
 function open(title, content) {
   $('dialogTitle').textContent = title;
@@ -133,6 +135,10 @@ function requestAdd(id, quantity) {
 function showCart() {
   refreshDraft();
   const items = products.filter(product => cart[product.id]);
+  if (items.length && (quoteAccessExpiresAt !== expiresAt || quoteAccessExpiresAt <= Date.now())) {
+    showContact('visualizar');
+    return;
+  }
   const lines = items.map(product => '<div class="quote-line"><a href="'+productUrl(product)+'" class="quote-photo">'+photo(product)+'</a><div><a class="product-link" href="'+productUrl(product)+'"><strong>'+product.name+'</strong></a><p class="muted">'+product.id+' · '+product.brand+'</p><p>'+escapeHtml(product.packaging)+'</p><span>'+priceLabel(product)+(hasPrice(product) ? ' · Subtotal: '+money(product.priceCents * cart[product.id]) : '')+'</span><div class="quantity"><button data-minus="'+product.id+'" aria-label="Diminuir '+product.id+'">−</button><span>'+cart[product.id]+'</span><button data-plus="'+product.id+'" aria-label="Aumentar '+product.id+'">+</button><button class="secondary" data-remove="'+product.id+'">Excluir</button></div></div></div>').join('');
   open('Minha cotação', items.length ? lines+
     '<p><strong>'+quoteTotal(items)+'</strong></p><p class="muted">Valores da Tabela Geral por embalagem indicada. Frete a combinar. Cada quantidade corresponde a uma caixa ou unidade descrita.</p><label class="quote-field">Condição de pagamento<select id="payment"><option>A combinar</option><option>Solicitar condição à vista</option><option>Solicitar condição parcelada</option></select></label>'+
@@ -152,13 +158,13 @@ const states = 'AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS R
 function showContact(flow, pending) {
   refreshDraft();
   const current = products.find(product => product.id === new URLSearchParams(location.search).get('produto'));
-  open(flow === 'adicionar' || flow === 'cotacao' ? 'Enviar minha cotação' : 'Falar com um vendedor',
+  open(flow === 'adicionar' || flow === 'cotacao' || flow === 'visualizar' ? 'Enviar minha cotação' : 'Falar com um vendedor',
     '<p class="notice">Prévia do catálogo. O envio ao CRM está em configuração. Use dados fictícios para testar.</p>'+
     '<form id="contactForm"><div class="fields"><label>Nome<input name="nome" required maxlength="120" autocomplete="name"></label><label>WhatsApp<input name="telefone" type="tel" required maxlength="25" autocomplete="tel" placeholder="(00) 00000-0000"></label>'+
     '<label>Cidade<input name="cidade" required maxlength="100" autocomplete="address-level2"></label><label>UF<select name="estado" required><option value="">Selecione</option>'+states.map(state=>'<option>'+state+'</option>').join('')+'</select></label>'+
     '<label>Empresa / CNPJ (opcional)<input name="cnpj" maxlength="40"></label><label>E-mail (opcional)<input name="email" type="email" maxlength="160" autocomplete="email"></label>'+
     '<label>Produto de interesse (opcional)<input name="interesse" maxlength="200" placeholder="Nome ou código do produto"></label></div>'+
-    '<div class="actions"><button type="submit">'+(flow === 'adicionar' ? 'Continuar para minha cotação' : flow === 'vendedor' ? 'Solicitar atendimento' : 'Enviar cotação')+'</button></div></form>');
+    '<div class="actions"><button type="submit">'+(flow === 'adicionar' || flow === 'visualizar' ? 'Ver minha cotação' : flow === 'vendedor' ? 'Solicitar atendimento' : 'Enviar cotação')+'</button></div></form>');
   const form = $('contactForm');
 
   form.elements.interesse.value = pending ? products.find(product=>product.id===pending.id).name : current?.name || '';
@@ -170,7 +176,13 @@ function showContact(flow, pending) {
     const contact = Object.fromEntries(new FormData(form));
     if (pending) {
       change(pending.id,pending.quantity);
+      quoteAccessExpiresAt = expiresAt;
       $('status').textContent = 'Dados preenchidos. Produto adicionado à sua cotação.';
+      showCart();
+      return;
+    }
+    if (flow === 'visualizar') {
+      quoteAccessExpiresAt = expiresAt;
       showCart();
       return;
     }
@@ -181,6 +193,7 @@ function showContact(flow, pending) {
     };
     const requestId = crypto.randomUUID();
     cart = {};
+    quoteAccessExpiresAt = 0;
     syncCart();
     open('Prévia da solicitação','<p class="notice">Solicitação preparada para '+(flow==='cotacao'?'cotação':'atendimento com vendedor')+'. O CRM ainda precisa ser conectado para realizar o envio.</p><p><strong>'+escapeHtml(payload.nome)+'</strong> · '+escapeHtml(payload.cidade)+' / '+escapeHtml(payload.estado)+'</p><p>'+payload.itens.length+' tipos de produto selecionados.</p><p>Simulação '+requestId+'. Seleção encerrada. Uma nova solicitação começa com os dados em branco.</p><button data-show-quote>Voltar à minha cotação</button>');
   });
