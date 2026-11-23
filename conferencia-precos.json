@@ -1,0 +1,306 @@
+[
+  {
+    "produto": "GLITZ — CERA NANO WAX",
+    "codigo": "20025",
+    "embalagem": "Caixa com 12 × 750 mL",
+    "preco": 575,
+    "celula": "Plan1!E53",
+    "descricao_planilha": "GLITZ - CERA NANO WAX - 12X750ML"
+  },
+  {
+    "produto": "ZERO — LIMPADOR DE PNEUS E BORRACHAS",
+    "codigo": "20027",
+    "embalagem": "Caixa com 12 × 750 mL",
+    "preco": 435,
+    "celula": "Plan1!E55",
+    "descricao_planilha": "ZERO - LIMP DE PNEUS E BORRACHAS - CX12X750ML"
+  },
+  {
+    "produto": "VIDRY — LIMPA VIDROS",
+    "codigo": "20023",
+    "embalagem": "Caixa com 12 × 750 mL",
+    "preco": 355,
+    "celula": "Plan1!E51",
+    "descricao_planilha": "VIDRY - LIMP. VIDROS - 12X750ML"
+  },
+  {
+    "produto": "REVIT PRO — CONDICIONADOR DE PLÁSTICOS E BORRACHAS",
+    "codigo": "20032",
+    "embalagem": "Caixa com 12 × 750 mL",
+    "preco": 495,
+    "celula": "Plan1!E60",
+    "descricao_planilha": "REVIT PRO - COND.PLASTICOS - 12X750ML"
+  },
+  {
+    "produto": "RELUX PRO — CONDICIONADOR DE PNEUS",
+    "codigo": "20024",
+    "embalagem": "Caixa com 12 × 750 mL",
+    "preco": 540,
+    "celula": "Plan1!E52",
+    "descricao_planilha": "RELUX - COND DE PNEUS - 12X750ML"
+  },
+  {
+    "produto": "BLACKOUT PRO GEL — SELANTE PARA PNEUS E BORRACHAS",
+    "codigo": "20030",
+    "embalagem": "Caixa com 12 × 750 mL",
+    "preco": 545,
+    "celula": "Plan1!E58",
+    "descricao_planilha": "BLACKOUT PRO GEL - SELANTE DE BORRACHAS - CX12X750"
+  },
+  {
+    "produto": "NUVE FOAM — LAVA AUTOS SUPER CONCENTRADO",
+    "codigo": "42",
+    "embalagem": "Caixa com 4 × 5 L",
+    "preco": 575,
+    "celula": "Plan1!E40",
+    "descricao_planilha": "NUVE FOAM - LAVA AUTOS 1:600 - CX4X5L"
+  },
+  {
+    "produto": "VERNID PRO — VERNIZ FINALIZADOR",
+    "codigo": "20031",
+    "embalagem": "Caixa com 12 × 750 mL",
+    "preco": 540,
+    "celula": "Plan1!E59",
+    "descricao_planilha": "VERNID PRO - VERNIZ FINALIZADOR - CX12X750ML"
+  },
+  {
+    "produto": "CLASSY — CONDICIONADOR DE COURO",
+    "codigo": "20029",
+    "embalagem": "Caixa com 12 × 750 mL",
+    "preco": 515,
+    "celula": "Plan1!E57",
+    "descricao_planilha": "CLASSY - COND DE COUROS - CX12X750ML"
+  },
+  {
+    "produto": "ARPUR — APC MULTIUSO",
+    "codigo": "20021",
+    "embalagem": "Caixa com 12 × 750 mL",
+    "preco": 358,
+    "celula": "Plan1!E49",
+    "descricao_planilha": "ARPUR - LIMPADOR APC - 12X750ML"
+  },
+  {
+    "produto": "ARPUR MILLION — APC MULTIUSO",
+    "codigo": "44",
+    "embalagem": "Caixa com 12 × 750 mL",
+    "preco": 458,
+    "celula": "Plan1!E54",
+    "descricao_planilha": " MILLION - LIMPADOR APC - CX12X750ML"
+  },
+  {
+    "produto": "REMOV — REMOVEDOR DE COLA / INSETOS / PICHE E GRAXA",
+    "codigo": "20022",
+    "embalagem": "Caixa com 12 × 750 mL",
+    "preco": 655,
+    "celula": "Plan1!E50",
+    "descricao_planilha": " REMOV - REMOVEDOR - 12X750ML"
+  },
+  {
+    "produto": "HFX EXTREME 1/200 — DESINCRUSTANTE ÁCIDO — 5 LITROS",
+    "codigo": "20",
+    "embalagem": "Caixa com 4 × 5 L",
+    "preco": 439,
+    "celula": "Plan1!E4",
+    "descricao_planilha": "HFX EXTREME DETERGENTE - 4X 5L"
+  },
+  {
+    "produto": "DX EXTREME 1/200 — DESENGRAXANTE ALCALINO — 5 LITROS",
+    "codigo": "2",
+    "embalagem": "Caixa com 4 × 5 L",
+    "preco": 439,
+    "celula": "Plan1!E3",
+    "descricao_planilha": "DX EXTREME ALCALINO 4X5L 1X200"
+  },
+  {
+    "produto": "SX EXTREME 1/200 — DETERGENTE AUTOMOTIVO — 5 LITROS",
+    "codigo": "21",
+    "embalagem": "Caixa com 4 × 5 L",
+    "preco": 439,
+    "celula": "Plan1!E5",
+    "descricao_planilha": "SX EXTREME DETERG. AUTOM. -4 X 5LT"
+  },
+  {
+    "produto": "HFX ORIGENS 1/100 — DESINCRUSTANTE ÁCIDO",
+    "status": "Sem correspondência exata de nome/embalagem"
+  },
+  {
+    "produto": "DX ORIGENS 1/100 — DESENGRAXANTE ALCALINO",
+    "status": "Sem correspondência exata de nome/embalagem"
+  },
+  {
+    "produto": "SX ORIGENS 1/100 — DETERGENTE AUTOMOTIVO",
+    "status": "Sem correspondência exata de nome/embalagem"
+  },
+  {
+    "produto": "ACID PRO — 1 LITRO",
+    "codigo": "29",
+    "embalagem": "Caixa com 12 × 1 L",
+    "preco": 435,
+    "celula": "Plan1!E32",
+    "descricao_planilha": " ACID. PRO - 12 X 1L"
+  },
+  {
+    "produto": "SOLUÇÃO ÁCIDA CONCRETEX",
+    "codigo": "30",
+    "embalagem": "Caixa com 4 × 5 L",
+    "preco": 340,
+    "celula": "Plan1!E33",
+    "descricao_planilha": "CONCRETEX 4 X 5L"
+  },
+  {
+    "produto": "TOP TIRES — LIMPA PNEUS — 5 LITROS",
+    "codigo": "8",
+    "embalagem": "Caixa com 4 × 5 L",
+    "preco": 270,
+    "celula": "Plan1!E23",
+    "descricao_planilha": "TOP TIRES ABRILHAN DE PNEUS- 4 X 5L"
+  },
+  {
+    "produto": "BLACKOUT — SELANTE PARA PNEUS E BORRACHAS — 5 LITROS",
+    "codigo": "20026",
+    "embalagem": "Caixa com 4 × 5 L",
+    "preco": 530,
+    "celula": "Plan1!E21",
+    "descricao_planilha": "BLACKOUT - SELANTE -4X5L"
+  },
+  {
+    "produto": "MULTICLEAN — FLOTADOR ECOLÓGICO — 5 LITROS",
+    "codigo": "32",
+    "embalagem": "Caixa com 4 × 5 L",
+    "preco": 260,
+    "celula": "Plan1!E35",
+    "descricao_planilha": "MULTICLEAN -4 X 5L"
+  },
+  {
+    "produto": "HYDROBARRAS — LIMPADOR DE BARRAS",
+    "codigo": "20044",
+    "embalagem": "Caixa com 4 × 5 L",
+    "preco": 695,
+    "celula": "Plan1!E43",
+    "descricao_planilha": "HYDROBARRAS DETERGENTE - CX4X5L"
+  },
+  {
+    "produto": "MENTAMOL — DETERGENTE PARA PRÉ-LAVAGEM AUTOMOTIVO — 5 LITROS",
+    "codigo": "20006",
+    "embalagem": "Caixa com 4 × 5 L",
+    "preco": 330,
+    "celula": "Plan1!E44",
+    "descricao_planilha": "MENTAMOL DET PRE LAVAGEM -4 X 5L"
+  },
+  {
+    "produto": "PROTECTION PLASTIC — SILICONE EM GEL",
+    "codigo": "34",
+    "embalagem": "Pote de 1 L — Flores do Cerrado",
+    "preco": 38,
+    "celula": "Plan1!E36",
+    "descricao_planilha": "SILICONE EM GEL - FLORES DO CERRADO - POTE 1 LITRO"
+  },
+  {
+    "produto": "ACQUA PARIS GOLD — PERFUME PARA AMBIENTE",
+    "codigo": "12",
+    "embalagem": "Caixa com 6 × 300 mL",
+    "preco": 222,
+    "celula": "Plan1!E26",
+    "descricao_planilha": "AROMATIZANTE ACQUA PARIS- 6 X 300ML"
+  },
+  {
+    "produto": "FLORES DO CERRADO GOLD — PERFUME PARA AMBIENTE",
+    "codigo": "13",
+    "embalagem": "Caixa com 6 × 300 mL",
+    "preco": 222,
+    "celula": "Plan1!E27",
+    "descricao_planilha": "AROMATIZANTE FLORES DO CERRADO GOLD -6 X 300ML"
+  },
+  {
+    "produto": "LOVING FRUIT — PERFUME PARA AMBIENTE",
+    "codigo": "15",
+    "embalagem": "Caixa com 6 × 300 mL",
+    "preco": 222,
+    "celula": "Plan1!E29",
+    "descricao_planilha": "AROMATIZANTE LOVING FRUIT -6 X 300ML"
+  },
+  {
+    "produto": "GRAX REMOVE — PASTA DESENGRAXANTE",
+    "codigo": "10",
+    "embalagem": "Balde de 3,2 kg",
+    "preco": 68.25,
+    "celula": "Plan1!E24",
+    "descricao_planilha": "GRAX REMOVE- BALDE 3,2KG "
+  },
+  {
+    "produto": "AUTOTURBO PULVERIZADORA PROFISSIONAL",
+    "codigo": "38",
+    "embalagem": "Unidade",
+    "preco": 22500,
+    "celula": "Plan1!E39",
+    "descricao_planilha": "AGRO PULVERIZADORA AUTOTURBO 2X1"
+  },
+  {
+    "produto": "AUTO SNOW GRAVITY 360º",
+    "codigo": "45",
+    "embalagem": "Unidade",
+    "preco": 139,
+    "celula": "Plan1!E42",
+    "descricao_planilha": " AUTO SNOW GRAVITY 360O"
+  },
+  {
+    "produto": "HFX EXTREME 1/200 — DESINCRUSTANTE ÁCIDO — 1 LITRO",
+    "codigo": "22",
+    "embalagem": "Caixa com 12 × 1 L",
+    "preco": 479,
+    "celula": "Plan1!E6",
+    "descricao_planilha": "HFX EXTREME DETERGENTE - 12 X 1L"
+  },
+  {
+    "produto": "DX EXTREME 1/200 — DESENGRAXANTE ALCALINO — 1 LITRO",
+    "codigo": "23",
+    "embalagem": "Caixa com 12 × 1 L",
+    "preco": 479,
+    "celula": "Plan1!E7",
+    "descricao_planilha": " DX EXTREME DETERGENTE -12 X 1L"
+  },
+  {
+    "produto": "SX EXTREME 1/200 — DETERGENTE AUTOMOTIVO — 1 LITRO",
+    "codigo": "24",
+    "embalagem": "Caixa com 12 × 1 L",
+    "preco": 479,
+    "celula": "Plan1!E8",
+    "descricao_planilha": " SX EXTREME DETERG. AUTOM.  - 12 X 1L"
+  },
+  {
+    "produto": "MENTAMOL — DETERGENTE PARA PRÉ-LAVAGEM AUTOMOTIVO — 1 LITRO",
+    "codigo": "20015",
+    "embalagem": "Caixa com 12 × 1 L",
+    "preco": 360,
+    "celula": "Plan1!E45",
+    "descricao_planilha": "MENTAMOL 12 X 1L - 1/100"
+  },
+  {
+    "produto": "MULTICLEAN — FLOTADOR ECOLÓGICO — 1 LITRO",
+    "codigo": "31",
+    "embalagem": "Caixa com 12 × 1 L",
+    "preco": 275,
+    "celula": "Plan1!E34",
+    "descricao_planilha": "MULTICLEAN -MULTIUSO- 12 X 1L"
+  },
+  {
+    "produto": "TOP TIRES — LIMPA PNEUS — 1 LITRO",
+    "codigo": "7",
+    "embalagem": "Caixa com 12 × 1 L",
+    "preco": 250,
+    "celula": "Plan1!E22",
+    "descricao_planilha": "TOP TIRES - ABRILHANT PNEUS -12 X 1LT"
+  },
+  {
+    "produto": "BLACKOUT — SELANTE PARA PNEUS E BORRACHAS — 1 LITRO",
+    "codigo": "6",
+    "embalagem": "Caixa com 12 × 1 L",
+    "preco": 440,
+    "celula": "Plan1!E20",
+    "descricao_planilha": " BLACKOUT - SELANTE - 12X 1L"
+  },
+  {
+    "produto": "VERNID PRO — VERNIZ FINALIZADOR — 1 LITRO",
+    "status": "Sem correspondência exata de nome/embalagem"
+  }
+]
