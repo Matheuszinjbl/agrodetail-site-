@@ -80,6 +80,7 @@ function quoteTotal(items) {
 function showProduct(code) {
   const product = products.find(item => item.id === code);
   $('hero').hidden = true;
+  $('destaques').hidden = true;
   $('catalogo').hidden = true;
   const page = $('productPage');
   page.hidden = false;
