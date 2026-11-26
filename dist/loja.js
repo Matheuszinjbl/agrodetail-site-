@@ -3,6 +3,39 @@ const $ = id => document.getElementById(id);
 const modal = $('modal');
 const panel = $('panel');
 
+// Envio para a plataforma (CRM). A chave é pública: identifica o catálogo, não dá acesso a nada.
+const CRM = {
+  url: 'https://supabase.digitalnotaveloficial.com.br/functions/v1/catalogo-publico',
+  chave: 'b5953b0e7c95fab9fd3b0aa80346112ce0a5'
+};
+let tentarDeNovo = () => {};
+function novoId() {
+  try { return crypto.randomUUID(); } catch { return 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2); }
+}
+function primeiroNome(nome) {
+  return String(nome || '').trim().split(/\s+/)[0] || '';
+}
+function eventoDoContato(tipo, contact, extra) {
+  return Object.assign({
+    chave: CRM.chave, tipo, requestId: novoId(), website: contact.website || '',
+    nome: contact.nome || '', telefone: contact.telefone || '', cidade: contact.cidade || '', estado: contact.estado || '',
+    email: contact.email || '', cnpj: contact.cnpj || '', interesse: contact.interesse || '', observacoes: '', itens: []
+  }, extra || {});
+}
+async function enviarAoCrm(evento) {
+  const resp = await fetch(CRM.url, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(evento)});
+  let corpo = null;
+  try { corpo = await resp.json(); } catch {}
+  if (!resp.ok || !corpo || corpo.ok !== true) throw new Error((corpo && corpo.erro) || ('HTTP ' + resp.status));
+  return corpo;
+}
+function itensDaCotacao() {
+  return products.filter(product => cart[product.id]).map(product => ({
+    codigo: product.sku || null, nome: product.name, embalagem: product.packaging || '', quantidade: cart[product.id],
+    foto: product.image ? product.image.replace(/^produtos\//, 'produtos/mini/') : null
+  }));
+}
+
 const draftKey = 'agrodetail-cotacao-precos-v3';
 const draftLifetime = 24 * 60 * 60 * 1000;
 let cart = {};
@@ -193,8 +226,7 @@ function showContact(flow, pending) {
   refreshDraft();
   const current = products.find(product => product.id === new URLSearchParams(location.search).get('produto'));
   open(flow === 'adicionar' || flow === 'cotacao' || flow === 'visualizar' ? 'Seus dados para a cotação' : 'Falar com um vendedor',
-    '<p class="notice">Prévia do catálogo. O envio ao CRM está em configuração. Use dados fictícios para testar.</p>'+
-    '<form id="contactForm"><div class="fields"><label>Nome<input name="nome" required maxlength="120" autocomplete="name"></label><label>WhatsApp<input name="telefone" type="tel" required maxlength="25" autocomplete="tel" placeholder="(00) 00000-0000"></label>'+
+    '<form id="contactForm"><label class="hp" aria-hidden="true">Site<input name="website" tabindex="-1" autocomplete="off"></label><div class="fields"><label>Nome<input name="nome" required maxlength="120" autocomplete="name"></label><label>WhatsApp<input name="telefone" type="tel" required maxlength="25" autocomplete="tel" placeholder="(00) 00000-0000"></label>'+
     '<label>Cidade<input name="cidade" required maxlength="100" autocomplete="address-level2"></label><label>UF<select name="estado" required><option value="">Selecione</option>'+states.map(state=>'<option>'+state+'</option>').join('')+'</select></label>'+
     '<label>E-mail (opcional)<input name="email" type="email" maxlength="160" autocomplete="email"></label>'+
     '<label class="cnpj-field"><span>CNPJ (opcional)</span><input name="cnpj" maxlength="18" autocomplete="off" inputmode="text" placeholder="00.000.000/0000-00"><small>Preencha para receber condição especial de preços.</small></label>'+'<label>Produto de interesse (opcional)<input name="interesse" maxlength="200" placeholder="Nome ou código do produto"></label></div>'+
@@ -217,6 +249,10 @@ function showContact(flow, pending) {
     if (!form.reportValidity()) return;
     const contact = Object.fromEntries(new FormData(form));
     if (contact.cnpj) contact.cnpj = contact.cnpj.replace(/\D/g, '');
+    if (pending || flow === 'visualizar') {
+      // Cadastro concluído: a plataforma já recebe os dados (sem esperar a resposta).
+      enviarAoCrm(eventoDoContato('cadastro', contact)).catch(() => {});
+    }
     if (pending) {
       change(pending.id,pending.quantity);
       saveQuoteContact(contact);
@@ -234,23 +270,44 @@ function showContact(flow, pending) {
   form.elements.telefone.addEventListener('input',()=>form.elements.telefone.setCustomValidity(''));
 }
 function completeRequest(flow, contact) {
-    const payload = {
-      origem:'catalogo-digital-agrodetail', tipo:flow, ...contact,
-      itens:products.filter(product=>cart[product.id]).map(product=>({codigo:product.sku || product.id,nome:product.name,embalagem:product.packaging,quantidade:cart[product.id],preco_centavos:priceFor(product,contact.cnpj?'cnpj':'cpf'),perfil_preco:contact.cnpj?'cnpj':'cpf',subtotal_centavos:priceFor(product,contact.cnpj?'cnpj':'cpf')!==null?priceFor(product,contact.cnpj?'cnpj':'cpf')*cart[product.id]:null})),
-      condicao_pagamento:preferences.payment, observacoes:preferences.notes
-    };
-    const requestId = crypto.randomUUID();
-    cart = {};
-    clearQuoteContact();
-    syncCart();
-    open('Prévia da solicitação','<p class="notice">Solicitação preparada para '+(flow==='cotacao'?'cotação':'atendimento com vendedor')+'. O CRM ainda precisa ser conectado para realizar o envio.</p><p><strong>'+escapeHtml(payload.nome)+'</strong> · '+escapeHtml(payload.cidade)+' / '+escapeHtml(payload.estado)+'</p><p>'+payload.itens.length+' tipos de produto selecionados.</p><p>Simulação '+requestId+'. Seleção encerrada. Uma nova solicitação começa com os dados em branco.</p><button data-show-quote>Voltar à minha cotação</button>');
+  const tipo = flow === 'vendedor' ? 'vendedor' : 'cotacao';
+  const evento = eventoDoContato(tipo, contact, tipo === 'cotacao' ? {itens: itensDaCotacao(), observacoes: preferences.notes || ''} : {});
+  return enviarEvento(tipo, contact, evento);
+}
+async function enviarEvento(tipo, contact, evento) {
+  open(tipo === 'cotacao' ? 'Enviando sua cotação' : 'Enviando seu pedido', '<p>Enviando…</p>');
+  try {
+    const resposta = await enviarAoCrm(evento);
+    if (tipo === 'cotacao') {
+      cart = {};
+      clearQuoteContact();
+      syncCart();
+    }
+    mostrarAgradecimento(tipo, contact, resposta);
+  } catch {
+    // Mesmo requestId na nova tentativa: se o primeiro envio chegou, a plataforma não duplica.
+    tentarDeNovo = () => enviarEvento(tipo, contact, evento);
+    open('Não foi possível enviar', '<p class="notice">Não conseguimos enviar agora. Confira a internet e tente de novo; sua seleção continua salva.</p>'+
+      '<div class="actions"><button data-retry>Tentar de novo</button><button class="secondary" data-show-quote>Voltar à minha cotação</button></div>');
+  }
+}
+function mostrarAgradecimento(tipo, contact, resposta) {
+  const nome = escapeHtml(primeiroNome(contact.nome));
+  if (tipo === 'vendedor') {
+    open('✓ Pedido enviado!', '<p>Obrigado'+(nome ? ', '+nome : '')+'. Um vendedor vai falar com você pelo WhatsApp.</p><div class="actions"><button class="secondary" data-browse>Voltar ao catálogo</button></div>');
+    return;
+  }
+  const w = resposta && resposta.whatsapp;
+  const botao = w && w.numero ? '<a class="cta" href="https://wa.me/'+encodeURIComponent(w.numero)+'?text='+encodeURIComponent(w.texto || '')+'" target="_blank" rel="noopener">Acompanhar pelo WhatsApp</a>' : '';
+  open('✓ Cotação enviada!', '<p>Obrigado'+(nome ? ', '+nome : '')+'. Sua cotação chegou para a nossa equipe.</p><p>Um responsável vai falar com você pelo WhatsApp.</p>'+
+    '<div class="actions">'+botao+'<button class="secondary" data-browse>Voltar ao catálogo</button></div>');
 }
 function requestQuote() {
   refreshDraft();
   if (!Object.keys(cart).length) { showCart(); return; }
   const contact = getQuoteContact();
   if (!contact) { showContact('cotacao'); return; }
-  completeRequest('cotacao', contact);
+  return completeRequest('cotacao', contact);
 }
 for (const id of ['search','category','brand']) $(id).addEventListener('input',render);
 $('cartButton').onclick = showCart;
@@ -258,7 +315,8 @@ $('close').onclick = () => modal.close();
 document.addEventListener('click', event => {
   const button = event.target.closest('button');
   if (!button) return;
-  const {add,minus,plus,remove,browse,flow,showQuote} = button.dataset;
+  const {add,minus,plus,remove,browse,flow,showQuote,retry} = button.dataset;
+  if (retry !== undefined) tentarDeNovo();
   if (add) requestAdd(add,1);
   if (minus || plus || remove) {
     if (remove) delete cart[remove];
