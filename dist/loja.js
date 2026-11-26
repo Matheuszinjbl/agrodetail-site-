@@ -20,7 +20,6 @@ function getQuoteContact() {
   }
   if (!quoteContact || !Number.isFinite(quoteContact.expiresAt) || quoteContact.expiresAt <= Date.now()
       || (expiresAt && quoteContact.expiresAt !== expiresAt)
-      || !validDocumentFormat(quoteContact.data?.tipo_documento, quoteContact.data?.documento)
       || typeof quoteContact.data?.nome !== 'string' || !quoteContact.data.nome.trim()
       || !/^\d{10,13}$/.test(String(quoteContact.data?.telefone ?? '').replace(/\D/g,''))) {
     clearQuoteContact();
@@ -93,12 +92,8 @@ function productUrl(product) {
   return '/?produto=' + encodeURIComponent(product.id);
 }
 const money = cents => new Intl.NumberFormat('pt-BR', {style:'currency',currency:'BRL'}).format(cents / 100);
-function validDocumentFormat(type, value) {
-  const document = String(value ?? '').replace(/[^a-z0-9]/gi,'').toUpperCase();
-  return type === 'cpf' ? /^\d{11}$/.test(document) : type === 'cnpj' && /^[A-Z0-9]{12}\d{2}$/.test(document);
-}
-function priceFor(product, profile = getQuoteContact()?.tipo_documento) {
-  if (!['cpf','cnpj'].includes(profile)) return null;
+function priceFor(product, profile) {
+  if (!profile) profile = getQuoteContact()?.cnpj ? 'cnpj' : 'cpf';
   const value = Object.prototype.hasOwnProperty.call(product.pricesByProfile || {}, profile)
     ? product.pricesByProfile[profile] : product.priceCents;
   return Number.isInteger(value) && value > 0 ? value : null;
@@ -180,7 +175,7 @@ function showCart() {
     return;
   }
   const lines = items.map(product => '<div class="quote-line"><a href="'+productUrl(product)+'" class="quote-photo">'+photo(product)+'</a><div><a class="product-link" href="'+productUrl(product)+'"><strong>'+product.name+'</strong></a><p class="muted">'+product.id+' · '+product.brand+'</p><p>'+escapeHtml(product.packaging)+'</p><span>'+priceLabel(product)+(hasPrice(product) ? ' · Subtotal: '+money(priceFor(product) * cart[product.id]) : '')+'</span><div class="quantity"><button data-minus="'+product.id+'" aria-label="Diminuir '+product.id+'">−</button><span>'+cart[product.id]+'</span><button data-plus="'+product.id+'" aria-label="Aumentar '+product.id+'">+</button><button class="secondary" data-remove="'+product.id+'">Excluir</button></div></div></div>').join('');
-  open('Minha cotação', items.length ? '<p class="muted">Perfil: '+(getQuoteContact().tipo_documento === 'cnpj' ? 'Pessoa jurídica (CNPJ)' : 'Pessoa física (CPF)')+'</p>'+lines+
+  open('Minha cotação', items.length ? '<p class="muted">Perfil: '+(getQuoteContact()?.cnpj ? 'Condição Especial (CNPJ)' : 'Tabela Geral')+'</p>'+lines+
     '<p><strong>'+quoteTotal(items)+'</strong></p><p class="muted">Valores da Tabela Geral por embalagem indicada. Frete a combinar. Cada quantidade corresponde a uma caixa ou unidade descrita.</p><div class="notice"><strong>Condição de pagamento</strong><p>O valor da Tabela Geral é válido para todas as formas de pagamento.</p></div>'+
     '<label class="quote-field">Observações<textarea id="notes" rows="3" maxlength="2000" placeholder="Conte sobre a aplicação, a entrega ou o interesse em revenda"></textarea></label>'+
     '<div class="actions"><button data-flow="cotacao">Enviar cotação</button><button class="secondary" data-browse>Continuar explorando</button></div>' :
@@ -199,36 +194,29 @@ function showContact(flow, pending) {
   const current = products.find(product => product.id === new URLSearchParams(location.search).get('produto'));
   open(flow === 'adicionar' || flow === 'cotacao' || flow === 'visualizar' ? 'Seus dados para a cotação' : 'Falar com um vendedor',
     '<p class="notice">Prévia do catálogo. O envio ao CRM está em configuração. Use dados fictícios para testar.</p>'+
-    '<form id="contactForm"><div class="fields"><label>Tipo de cadastro<select name="tipo_documento" id="documentType" required><option value="">Selecione CPF ou CNPJ</option><option value="cpf">Pessoa física — CPF</option><option value="cnpj">Pessoa jurídica — CNPJ</option></select></label><label><span id="documentLabel">CPF ou CNPJ</span><input name="documento" required maxlength="18" autocomplete="off" placeholder="Selecione o tipo de cadastro"></label><label>Nome<input name="nome" required maxlength="120" autocomplete="name"></label><label>WhatsApp<input name="telefone" type="tel" required maxlength="25" autocomplete="tel" placeholder="(00) 00000-0000"></label>'+
+    '<form id="contactForm"><div class="fields"><label>Nome<input name="nome" required maxlength="120" autocomplete="name"></label><label>WhatsApp<input name="telefone" type="tel" required maxlength="25" autocomplete="tel" placeholder="(00) 00000-0000"></label>'+
     '<label>Cidade<input name="cidade" required maxlength="100" autocomplete="address-level2"></label><label>UF<select name="estado" required><option value="">Selecione</option>'+states.map(state=>'<option>'+state+'</option>').join('')+'</select></label>'+
-    '<label>Empresa (opcional)<input name="empresa" maxlength="120" autocomplete="organization"></label><label>E-mail (opcional)<input name="email" type="email" maxlength="160" autocomplete="email"></label>'+
-    '<label>Produto de interesse (opcional)<input name="interesse" maxlength="200" placeholder="Nome ou código do produto"></label></div>'+
+    '<label>E-mail (opcional)<input name="email" type="email" maxlength="160" autocomplete="email"></label>'+
+    '<label class="cnpj-field"><span>CNPJ (opcional)</span><input name="cnpj" maxlength="18" autocomplete="off" inputmode="text" placeholder="00.000.000/0000-00"><small>Preencha para receber condição especial de preços.</small></label>'+'<label>Produto de interesse (opcional)<input name="interesse" maxlength="200" placeholder="Nome ou código do produto"></label></div>'+
     '<div class="actions"><button type="submit">'+(flow === 'adicionar' || flow === 'visualizar' ? 'Ver minha cotação' : flow === 'vendedor' ? 'Solicitar atendimento' : 'Enviar cotação')+'</button></div></form>');
   const form = $('contactForm');
-  const documentType = form.elements.tipo_documento;
-  const documentField = form.elements.documento;
-  function updateDocumentField() {
-    const isCnpj = documentType.value === 'cnpj';
-    $('documentLabel').textContent = isCnpj ? 'CNPJ' : documentType.value === 'cpf' ? 'CPF' : 'CPF ou CNPJ';
-    documentField.placeholder = isCnpj ? '00.000.000/0000-00' : documentType.value === 'cpf' ? '000.000.000-00' : 'Selecione o tipo de cadastro';
-    documentField.inputMode = isCnpj ? 'text' : 'numeric';
-    documentField.maxLength = isCnpj ? 18 : 14;
-    documentField.setCustomValidity('');
+  const cnpjField = form.elements.cnpj;
+  if (cnpjField) {
+    cnpjField.addEventListener('input', () => cnpjField.setCustomValidity(''));
   }
-  documentType.addEventListener('change', () => {documentField.value = ''; updateDocumentField();});
-  documentField.addEventListener('input', () => documentField.setCustomValidity(''));
-  updateDocumentField();
 
   form.elements.interesse.value = pending ? products.find(product=>product.id===pending.id).name : current?.name || '';
   form.addEventListener('submit', event => {
     event.preventDefault();
     const phone = form.elements.telefone;
     phone.setCustomValidity(/^\d{10,13}$/.test(phone.value.replace(/\D/g,'')) ? '' : 'Informe o WhatsApp com DDD.');
-    documentField.setCustomValidity(validDocumentFormat(documentType.value, documentField.value)
-      ? '' : documentType.value === 'cnpj' ? 'Informe o CNPJ completo com 14 caracteres.' : 'Informe o CPF completo com 11 dígitos.');
+    if (cnpjField && cnpjField.value.trim()) {
+      const digits = cnpjField.value.replace(/\D/g, '');
+      cnpjField.setCustomValidity(digits.length === 14 ? '' : 'Informe o CNPJ completo com 14 dígitos.');
+    }
     if (!form.reportValidity()) return;
     const contact = Object.fromEntries(new FormData(form));
-    contact.documento = contact.documento.replace(/[^a-z0-9]/gi,'').toUpperCase();
+    if (contact.cnpj) contact.cnpj = contact.cnpj.replace(/\D/g, '');
     if (pending) {
       change(pending.id,pending.quantity);
       saveQuoteContact(contact);
@@ -248,7 +236,7 @@ function showContact(flow, pending) {
 function completeRequest(flow, contact) {
     const payload = {
       origem:'catalogo-digital-agrodetail', tipo:flow, ...contact,
-      itens:products.filter(product=>cart[product.id]).map(product=>({codigo:product.sku || product.id,nome:product.name,embalagem:product.packaging,quantidade:cart[product.id],preco_centavos:priceFor(product,contact.tipo_documento),perfil_preco:contact.tipo_documento,subtotal_centavos:priceFor(product,contact.tipo_documento)!==null?priceFor(product,contact.tipo_documento)*cart[product.id]:null})),
+      itens:products.filter(product=>cart[product.id]).map(product=>({codigo:product.sku || product.id,nome:product.name,embalagem:product.packaging,quantidade:cart[product.id],preco_centavos:priceFor(product,contact.cnpj?'cnpj':'cpf'),perfil_preco:contact.cnpj?'cnpj':'cpf',subtotal_centavos:priceFor(product,contact.cnpj?'cnpj':'cpf')!==null?priceFor(product,contact.cnpj?'cnpj':'cpf')*cart[product.id]:null})),
       condicao_pagamento:preferences.payment, observacoes:preferences.notes
     };
     const requestId = crypto.randomUUID();
