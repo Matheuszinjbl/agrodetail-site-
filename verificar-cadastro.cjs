@@ -4,7 +4,7 @@ const local=new Map(),session=new Map();let now=100000;
 const storage=map=>({getItem:k=>map.get(k),setItem:(k,v)=>map.set(k,v),removeItem:k=>map.delete(k)});
 // Plataforma de mentira: guarda cada envio e responde como a função catalogo-publico.
 const enviados=[];let falharRede=false;
-const RESPOSTA={ok:true,numero:'COT-2026-0001',whatsapp:{numero:'5566996567876',texto:'Quero acompanhar minha cotação nº COT-2026-0001'}};
+const RESPOSTA={ok:true,numero:'COT-2026-0001',whatsapp:{numero:'5566996567876',texto:'Quero acompanhar minha cotação'}};
 async function fetchFalso(url,opcoes){
  if(falharRede) throw new Error('sem rede');
  const corpo=JSON.parse(opcoes.body);enviados.push({url,corpo});
@@ -36,7 +36,7 @@ assert.deepEqual(cot.itens[0],{codigo:'20025',nome:'GLITZ — CERA NANO WAX',emb
 assert.equal(p.nodes.dialogTitle.textContent,'✓ Cotação enviada!');
 assert.match(p.nodes.panel.innerHTML,/Obrigado, Teste\. Sua cotação chegou para a nossa equipe\./);
 assert.doesNotMatch(p.nodes.panel.innerHTML,/COT-2026-0001<|nº COT-2026-0001</);
-assert.match(p.nodes.panel.innerHTML,/href="https:\/\/wa\.me\/5566996567876\?text=Quero%20acompanhar%20minha%20cota%C3%A7%C3%A3o%20n%C2%BA%20COT-2026-0001"/);
+assert.match(p.nodes.panel.innerHTML,/href="https:\/\/wa\.me\/5566996567876\?text=Quero%20acompanhar%20minha%20cota%C3%A7%C3%A3o"/);
 assert.match(p.nodes.panel.innerHTML,/Acompanhar pelo WhatsApp/);
 assert.equal(p.run('Object.keys(cart).length'),0);assert.equal(session.size,0);
 p.run('requestAdd(products[0].id,1)');assert.equal(p.forms(),1);p.form.submit({preventDefault(){}});
