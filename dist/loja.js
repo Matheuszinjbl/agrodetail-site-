@@ -6,7 +6,8 @@ const panel = $('panel');
 // Envio para a plataforma (CRM). A chave é pública: identifica o catálogo, não dá acesso a nada.
 const CRM = {
   url: 'https://supabase.digitalnotaveloficial.com.br/functions/v1/catalogo-publico',
-  chave: 'b5953b0e7c95fab9fd3b0aa80346112ce0a5'
+  chave: 'b5953b0e7c95fab9fd3b0aa80346112ce0a5',
+  espera409: 3000
 };
 let tentarDeNovo = () => {};
 function novoId() {
@@ -22,12 +23,24 @@ function eventoDoContato(tipo, contact, extra) {
     email: contact.email || '', cnpj: contact.cnpj || '', interesse: contact.interesse || '', observacoes: '', itens: []
   }, extra || {});
 }
-async function enviarAoCrm(evento) {
+async function enviarAoCrm(evento, tentativas) {
+  if (tentativas === undefined) tentativas = 3;
   const resp = await fetch(CRM.url, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(evento)});
   let corpo = null;
   try { corpo = await resp.json(); } catch {}
+  // 409 = o mesmo envio ainda está sendo processado: espera um pouco e pergunta de novo.
+  if (resp.status === 409 && tentativas > 0) {
+    await new Promise(resolve => setTimeout(resolve, CRM.espera409));
+    return enviarAoCrm(evento, tentativas - 1);
+  }
   if (!resp.ok || !corpo || corpo.ok !== true) throw new Error((corpo && corpo.erro) || ('HTTP ' + resp.status));
   return corpo;
+}
+function mensagemDeErro(erro) {
+  const codigo = erro && erro.message;
+  if (codigo === 'campo_invalido') return 'Confira os dados preenchidos (WhatsApp com DDD, cidade e UF) e tente de novo; sua seleção continua salva.';
+  if (codigo === 'limite') return 'Muitas tentativas seguidas. Aguarde alguns minutos e tente de novo; sua seleção continua salva.';
+  return 'Não conseguimos enviar agora. Confira a internet e tente de novo; sua seleção continua salva.';
 }
 function itensDaCotacao() {
   return products.filter(product => cart[product.id]).map(product => ({
@@ -284,10 +297,10 @@ async function enviarEvento(tipo, contact, evento) {
       syncCart();
     }
     mostrarAgradecimento(tipo, contact, resposta);
-  } catch {
+  } catch (erro) {
     // Mesmo requestId na nova tentativa: se o primeiro envio chegou, a plataforma não duplica.
     tentarDeNovo = () => enviarEvento(tipo, contact, evento);
-    open('Não foi possível enviar', '<p class="notice">Não conseguimos enviar agora. Confira a internet e tente de novo; sua seleção continua salva.</p>'+
+    open('Não foi possível enviar', '<p class="notice">'+mensagemDeErro(erro)+'</p>'+
       '<div class="actions"><button data-retry>Tentar de novo</button><button class="secondary" data-show-quote>Voltar à minha cotação</button></div>');
   }
 }

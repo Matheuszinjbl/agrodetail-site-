@@ -5,15 +5,19 @@ const storage=map=>({getItem:k=>map.get(k),setItem:(k,v)=>map.set(k,v),removeIte
 // Plataforma de mentira: guarda cada envio e responde como a função catalogo-publico.
 const enviados=[];let falharRede=false;
 const RESPOSTA={ok:true,numero:'COT-2026-0001',whatsapp:{numero:'5566996567876',texto:'Quero acompanhar minha cotação'}};
+const filaStatus=[]; // respostas de erro a devolver antes das normais (409 em andamento, 400, 429)
 async function fetchFalso(url,opcoes){
  if(falharRede) throw new Error('sem rede');
- const corpo=JSON.parse(opcoes.body);enviados.push({url,corpo});
+ const corpo=JSON.parse(opcoes.body);
+ if(filaStatus.length){const st=filaStatus.shift();enviados.push({url,corpo,status:st});
+  return {ok:false,status:st,json:async()=>({ok:false,erro:st===409?'em_andamento':st===429?'limite':'campo_invalido'})};}
+ enviados.push({url,corpo});
  return {ok:true,status:200,json:async()=>corpo.tipo==='cotacao'?RESPOSTA:{ok:true,numero:null,whatsapp:null}};
 }
 function page(){
  const nodes={};let forms=0;
  const form={elements:{tipo_documento:{value:'cpf',addEventListener(){}},documento:{value:'12345678901',setCustomValidity(){},addEventListener(){}},interesse:{},telefone:{value:'66999999999',setCustomValidity(){},addEventListener(){}}},addEventListener(t,fn){this[t]=fn;forms++},reportValidity(){return true}};
- const c=vm.createContext({document:{getElementById(id){if(id==='contactForm')return form;return nodes[id]??={value:'',addEventListener(){},showModal(){}}},addEventListener(){}},window:{addEventListener(){}},location:{search:''},URLSearchParams,Intl,JSON,Error,Promise,encodeURIComponent,Date:{now:()=>now},crypto:{randomUUID:()=> 'test-request-'+(++enviados.contador||(enviados.contador=1))},FormData:class{*[Symbol.iterator](){yield ['tipo_documento','cpf'];yield ['documento','12345678901'];yield ['nome','Teste'];yield ['telefone','66999999999'];yield ['cidade','Primavera do Leste'];yield ['estado','MT'];yield ['website',''];}},localStorage:storage(local),sessionStorage:storage(session),fetch:fetchFalso});
+ const c=vm.createContext({document:{getElementById(id){if(id==='contactForm')return form;return nodes[id]??={value:'',addEventListener(){},showModal(){}}},addEventListener(){}},window:{addEventListener(){}},location:{search:''},URLSearchParams,Intl,JSON,Error,Promise,encodeURIComponent,Date:{now:()=>now},crypto:{randomUUID:()=> 'test-request-'+(++enviados.contador||(enviados.contador=1))},FormData:class{*[Symbol.iterator](){yield ['tipo_documento','cpf'];yield ['documento','12345678901'];yield ['nome','Teste'];yield ['telefone','66999999999'];yield ['cidade','Primavera do Leste'];yield ['estado','MT'];yield ['website',''];}},localStorage:storage(local),sessionStorage:storage(session),fetch:fetchFalso,setTimeout});
  vm.runInContext(source,c);return{nodes,form,run:s=>vm.runInContext(s,c),forms:()=>forms};
 }
 (async()=>{
@@ -70,6 +74,20 @@ assert.equal(enviados.length,antes+1);assert.equal(p.nodes.dialogTitle.textConte
 assert.match(p.nodes.panel.innerHTML,/Obrigado, Ana\./);
 const r1=enviados.at(-1).corpo.requestId;
 console.log('Sem rede: erro com "Tentar de novo", seleção mantida e reenvio verificados.');
+
+// "Ainda processando" (409): o site espera e tenta de novo sozinho, com o mesmo requestId.
+p=page();p.run("CRM.espera409=0;cart={};syncCart();change(products[0].id,1);saveQuoteContact({nome:'Rui Lima',telefone:'66933334444',cidade:'Sinop',estado:'MT'})");
+filaStatus.push(409);let n0=enviados.length;await p.run('requestQuote()');
+assert.equal(enviados.length,n0+2);assert.equal(enviados.at(-1).corpo.requestId,enviados.at(-2).corpo.requestId);
+assert.equal(p.nodes.dialogTitle.textContent,'✓ Cotação enviada!');
+// Dados recusados (400) e muitas tentativas (429): mensagem própria, seleção mantida.
+p=page();p.run("cart={};syncCart();change(products[0].id,1);saveQuoteContact({nome:'Rui Lima',telefone:'66933334444',cidade:'Sinop',estado:'MT'})");
+filaStatus.push(400);await p.run('requestQuote()');
+assert.equal(p.nodes.dialogTitle.textContent,'Não foi possível enviar');assert.match(p.nodes.panel.innerHTML,/Confira os dados/);
+assert.equal(p.run('Object.keys(cart).length'),1);
+filaStatus.push(429);await p.run('tentarDeNovo()');
+assert.match(p.nodes.panel.innerHTML,/Muitas tentativas seguidas/);
+console.log('Repetição e erros: 409 espera e reenvia, 400 e 429 com mensagem própria verificados.');
 
 // Falar com um vendedor: evento próprio, sem itens; o carrinho não é esvaziado.
 p=page();p.run("cart={};syncCart();change(products[1].id,1)");p.run("showContact('vendedor')");p.form.submit({preventDefault(){}});
